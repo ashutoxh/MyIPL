@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "496160910106",
+    "firebase_url": "https://myipl-1a4e6.firebaseio.com",
+    "project_id": "myipl-1a4e6",
+    "storage_bucket": "myipl-1a4e6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496160910106:android:042fddcc9705120df55aa3",
+        "android_client_info": {
+          "package_name": "nf.co.myipl.myipl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "496160910106-opfc4bbfo1o1oq8b2l498c01sd87r7hs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuN-YIU225Li0yxWU_hyZtYZVMQ0nfzd8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "496160910106-opfc4bbfo1o1oq8b2l498c01sd87r7hs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
