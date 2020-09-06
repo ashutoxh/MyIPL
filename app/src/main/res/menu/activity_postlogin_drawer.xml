@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/grphome"
+        android:checkableBehavior="single">
+
+
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@mipmap/ic_home_black_24dp"
+            android:title="Home" />
+
+    </group>
+
+    <group
+        android:id="@+id/grp1"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_fixtures"
+            android:icon="@mipmap/fixtures"
+            android:title="Fixtures" />
+        <item
+            android:id="@+id/nav_rules"
+            android:icon="@mipmap/rules"
+            android:title="Rules" />
+    </group>
+
+    <group
+        android:id="@+id/grp2"
+        android:visible="true">
+
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_menu_share"
+            android:title="Share" />
+
+        <item
+            android:id="@+id/contact_us"
+            android:icon="@mipmap/ic_feedback_black_24dp"
+            android:title="Contact us" />
+
+    </group>
+
+    <group
+        android:id="@+id/grp3"
+        android:visible="true">
+
+        <item
+            android:id="@+id/nav_info"
+            android:icon="@mipmap/ic_info_black_24dp"
+            android:title="About us" />
+    </group>
+
+
+</menu>
+

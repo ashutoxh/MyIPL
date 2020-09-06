@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#7FB3D5</color>
+    <color name="colorPrimaryDark">#2980B9</color>
+    <color name="colorAccent">#a9dfbf</color>
+    <color name="btnclr">#eaecee</color>
+    <color name="black_color">#000000</color>
+    <color name ="bg_color">#79FFE6E6</color>
+    <color name="bg_login">#dde7ff</color>
+    <color name="bg_purple">#D5CFF1 </color>
+    <color name="bg_pst_login">#E3F6CE </color>
+    <color name="color_gold">#DAA520</color>
+    <color name="color_silver">#FFFFFF</color>
+    <color name="color_bronze">#A75B10</color>
+    <color name="color_default">#FFD8B1</color>
+</resources>
