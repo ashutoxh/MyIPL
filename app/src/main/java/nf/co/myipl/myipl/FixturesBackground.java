@@ -3,6 +3,7 @@ package nf.co.myipl.myipl;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
@@ -10,12 +11,10 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 
 
 public class FixturesBackground extends AsyncTask<Void, Void, Object[]> {
@@ -45,50 +44,38 @@ public class FixturesBackground extends AsyncTask<Void, Void, Object[]> {
         ArrayList<String> match1 = new ArrayList<>();
         ArrayList<String> match2 = new ArrayList<>();
         ArrayList<String> winner = new ArrayList<>();
-        StringBuilder data = new StringBuilder();
+        String response = null;
         try {
-            String schedule_url = "https://myipl1-235507.appspot.com/player/scheduler";
-            HttpURLConnection httpURLConnection;
-            String line = "";
-            httpURLConnection = (HttpURLConnection) new URL(schedule_url).openConnection();
+            String schedule_url = Utility.url_host + "/player/scheduler";
 
-            httpURLConnection.setRequestMethod("GET");
+            response = Utility.getData(schedule_url);
 
-            httpURLConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            httpURLConnection.setRequestProperty("Accept", "application/json; charset=UTF-8");
-            httpURLConnection.setDoInput(true);
-
-            InputStream inputStream = httpURLConnection.getInputStream();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            while (line != null) {
-                line = bufferedReader.readLine();
-                data.append(line);
+            if (response != null) {
+                JSONObject userData = new JSONObject(response);
+                Log.d("FixturesBackground", "response : " + response);
+                JSONArray jsonArray = userData.getJSONArray("scheduler");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, MMM d");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject arrayData = jsonArray.getJSONObject(i);
+//                    dateArr.add(arrayData.getString("date"));
+                    Date date1 = new Date(Long.parseLong(arrayData.getString("date")));
+                    dateArr.add(simpleDateFormat.format(date1));
+                    Log.d("FixturesBackground", "dateArr : " + simpleDateFormat.format(date1));
+                    match1.add(arrayData.getString("match1"));
+                    match2.add(arrayData.getString("match2"));
+                    if (!arrayData.has("winner") || arrayData.getString("winner").equalsIgnoreCase("null"))
+                        winner.add("--");
+                    else
+                        winner.add(arrayData.getString("winner"));
+                }
+                Log.d("FixturesBackground", "dateArr : " + Arrays.toString(dateArr.toArray()));
+                Log.d("FixturesBackground", "match1 : " + Arrays.toString(match1.toArray()));
+                Log.d("FixturesBackground", "match2 : " + Arrays.toString(match2.toArray()));
+                Log.d("FixturesBackground", "winner : " + Arrays.toString(winner.toArray()));
             }
-//            data.append("{\"action\":\"success\"," + "\"date\":" + "["
-//                    + "{\"date\":\"2018-04-07\"," + "\"match1\":\"MI\"," + "\"match2\":\"RCB\"},"
-//                    + "{\"date\":\"2018-04-07\"," + "\"match1\":\"RR\"," + "\"match2\":\"SRH\"},"
-//                    + "{\"date\":\"2018-04-08\"," + "\"match1\":\"CSK\"," + "\"match2\":\"RCB\"}"
-//                    + "]" + "}");
-//            Log.d("Get Schedule ", data.toString());
-
-            JSONObject userData = new JSONObject(data.toString());
-            JSONArray jsonArray = userData.getJSONArray("scheduler");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject arrayData = jsonArray.getJSONObject(i);
-                dateArr.add(arrayData.getString("date"));
-                match1.add(arrayData.getString("match1"));
-                match2.add(arrayData.getString("match2"));
-                if (arrayData.getString("winner").equalsIgnoreCase("null"))
-                    winner.add("--");
-                else
-                    winner.add(arrayData.getString("winner"));
-            }
-            bufferedReader.close();
-            inputStream.close();
-            httpURLConnection.disconnect();
         } catch (Exception e) {
             FirebaseCrashlytics.getInstance().recordException(e);
-            FirebaseCrashlytics.getInstance().log("FixturesBackground : data: " + data.toString() + " Exception : " + e.getMessage());
+            FirebaseCrashlytics.getInstance().log("FixturesBackground : response: " + response + " Exception : " + e.getMessage());
             e.printStackTrace();
         }
         return new Object[]{dateArr, match1, match2, winner};

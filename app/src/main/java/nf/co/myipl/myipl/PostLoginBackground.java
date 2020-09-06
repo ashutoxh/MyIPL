@@ -1,29 +1,24 @@
 package nf.co.myipl.myipl;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
@@ -37,106 +32,62 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
 
     @Override
     protected Object[] doInBackground(String... strings) {
-        {
-            String KEY = "KXHDJMF1OPW7";
-            String dateTime;
-            String date = "";
-            ArrayList<String> match1 = new ArrayList<>();
-            ArrayList<String> match2 = new ArrayList<>();
+        String schedule_url = Utility.url_host + "/player/scheduler";
+        String date;
+        ArrayList<String> match1 = new ArrayList<>();
+        ArrayList<String> match2 = new ArrayList<>();
+        String response = null;
+
+        date = Utility.getDate();
+
+        if (date != null) {
             try {
-                URL url = new URL("");
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                InputStream inputStream = httpURLConnection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                String line = "";
-                StringBuilder data = new StringBuilder();
-                while (line != null) {
-                    line = bufferedReader.readLine();
-                    data.append(line);
-                }
-                JSONObject JO = new JSONObject(data.toString());
-                dateTime = JO.getString("formatted");
-//                dateTime = "2018-05-21 04:00:00";
-                date = dateTime.substring(0, 10);
-//            Log.d("Get Schedule DATE ", "" + date);
-                httpURLConnection.disconnect();
-                inputStream.close();
-                bufferedReader.close();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            String schedule_url = "https://myipl1-235507.appspot.com/player/scheduler";
-            HttpURLConnection httpURLConnection;
-            StringBuilder data = new StringBuilder();
-            String line = "";
-            try {
-                httpURLConnection = (HttpURLConnection) new URL(schedule_url).openConnection();
-
-                httpURLConnection.setRequestMethod("GET");
-
-                httpURLConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                httpURLConnection.setRequestProperty("Accept", "application/json; charset=UTF-8");
-                httpURLConnection.setDoInput(true);
-
-                InputStream inputStream = httpURLConnection.getInputStream();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                while (line != null) {
-                    line = bufferedReader.readLine();
-                    data.append(line);
-                }
-//            data.append("{\"action\":\"success\"," + "\"date\":" + "["
-//                    + "{\"date\":\"2018-04-07\"," + "\"match1\":\"MI\"," + "\"match2\":\"RCB\"},"
-//                    + "{\"date\":\"2018-04-07\"," + "\"match1\":\"RR\"," + "\"match2\":\"SRH\"},"
-//                    + "{\"date\":\"2018-04-08\"," + "\"match1\":\"CSK\"," + "\"match2\":\"RCB\"}"
-//                    + "]" + "}");
-//            Log.d("Get Schedule ", data.toString());
-
-                JSONObject userData = new JSONObject(data.toString());
-                JSONArray jsonArray = userData.getJSONArray("scheduler");
-//                Log.d("JSONARRAYYY ", "" + jsonArray);
-                int count = 0;
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject arrayData = jsonArray.getJSONObject(i);
-                    if (date.equals(arrayData.getString("date"))) {
-                        match1.add(arrayData.getString("match1"));
-                        match2.add(arrayData.getString("match2"));
-                        count++;
+                response = Utility.getData(schedule_url);
+                if (response != null) {
+                    Log.d("PostLoginBackground", "response : " + response);
+                    JSONObject userData = new JSONObject(response);
+                    if ("success".equals(userData.getString("action"))) {
+                        JSONArray jsonArray = userData.getJSONArray("scheduler");
+                        int count = 0;
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject arrayData = jsonArray.getJSONObject(i);
+                            SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
+                            Date date1 = new Date(Long.parseLong(arrayData.getString("date")));
+                            String d2 = sf.format(date1);
+                            Log.d("PostLoginBackground", "date from TS : " + d2);
+                            if (date.equals(d2)) {
+                                match1.add(arrayData.getString("match1"));
+                                match2.add(arrayData.getString("match2"));
+                                count++;
+                            }
+                            if (count > 2)
+                                break;
+                        }
+                        Log.d("PostLoginBackground", "User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
+                        FirebaseCrashlytics.getInstance().log("PostLoginBackground(schedule_url) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
                     }
-                    if (count > 2)
-                        break;
+                } else {
+                    Log.d("PostLoginBackground", "User : " + new UserInfo(ctx).getSavedUserID() + "  : Response is NULL");
+                    FirebaseCrashlytics.getInstance().log("PostLoginBackground(schedule_url) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response is NULL");
                 }
-                bufferedReader.close();
-                inputStream.close();
-                httpURLConnection.disconnect();
-            } catch (JSONException e) {
+            } catch (Exception e) {
+                FirebaseCrashlytics.getInstance().recordException(e);
+                FirebaseCrashlytics.getInstance().log("PostLoginBackground(schedule_url) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response + " Exception : " + e.getMessage());
                 e.printStackTrace();
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("PostLoginBackground", "schedule_url : Error Message : " + e.getMessage());
             }
-            return new Object[]{date, match1, match2};
         }
+        return new Object[]{date, match1, match2};
     }
 
     @Override
     protected void onPostExecute(Object[] temp) {
         if (Utility.connection(ctx)) {
-            ArrayList<String> match1 = new ArrayList<>();
-            ArrayList<String> match2 = new ArrayList<>();
-            match1.add("MI");
-            match1.add("RCB");
-            match2.add("CSK");
-            match2.add("DC");
-//        match1 = (ArrayList<String>) temp[1];
-//        match2 = (ArrayList<String>) temp[2];
-            //Log.d("POSTLOGIN OBJECT ", " " + match1.toString() + " " + match2.toString());
+            ArrayList<String> match1;
+            ArrayList<String> match2;
+            match1 = (ArrayList<String>) temp[1];
+            match2 = (ArrayList<String>) temp[2];
+            Log.d("POSTLOGIN OBJECT ", " " + match1.toString() + " " + match2.toString());
             ArrayList<String> team = new ArrayList<>();
             if (match1.size() != 0) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -177,6 +128,7 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
                     setMatchIcon(team);
                     new UserInfo(ctx).setMATCH_COUNT(1);
                 }
+                new PostLoginActivity().refreshTime();
             } else {
                 PostLoginActivity.textPrediction.setText("No match today. Check fixtures for more info.");
                 PostLoginActivity.team1a.setVisibility(View.GONE);
@@ -186,6 +138,7 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
                 PostLoginActivity.team2b.setVisibility(View.GONE);
                 PostLoginActivity.VS2.setVisibility(View.GONE);
                 PostLoginActivity.progressBar.setVisibility(View.GONE);
+                PostLoginActivity.timeLeft.setVisibility(View.GONE);
             }
             PostLoginActivity.leaderboardbtn.setClickable(true);
             PostLoginActivity.predictionbtn.setClickable(true);
@@ -201,7 +154,6 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
             PostLoginActivity.progressBar.setVisibility(View.GONE);
             PostLoginActivity.timeLeft.setVisibility(View.GONE);
         }
-        PostLoginActivity.refreshTime();
     }
 
     private void setMatchIcon(ArrayList<String> team) {

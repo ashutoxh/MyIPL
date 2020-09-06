@@ -22,11 +22,11 @@
 
         <item
             android:id="@+id/nav_fixtures"
-            android:icon="@mipmap/ic_description_black_24dp"
+            android:icon="@mipmap/fixtures"
             android:title="Fixtures" />
         <item
             android:id="@+id/nav_rules"
-            android:icon="@mipmap/ic_list_black_24dp"
+            android:icon="@mipmap/rules"
             android:title="Rules" />
     </group>
 

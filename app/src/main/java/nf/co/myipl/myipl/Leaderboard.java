@@ -1,6 +1,7 @@
 package nf.co.myipl.myipl;
 
 import android.annotation.SuppressLint;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -25,6 +26,7 @@ public class Leaderboard extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
         setSupportActionBar(toolbar);
+        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.color_silver), PorterDuff.Mode.SRC_ATOP);
 
         leaderboard = findViewById(R.id.leaderboard);
         progressBar = findViewById(R.id.progressBar);

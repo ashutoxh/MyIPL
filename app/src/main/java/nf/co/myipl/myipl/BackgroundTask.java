@@ -54,16 +54,14 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
                         JSONObject JO = new JSONObject(response);
                         Log.v("BGThread(REGISTER) : ", "RES DATA : " + JO.toString());
                         response_api = JO.getString("action");
-                        Log.v("BGThread(REGISTER) : ", "Response : " + response_api);
-                        errorMessage = JO.getString("errorMessage");
-                        Log.v("BGThread(REGISTER) : ", "Error Message : " + errorMessage);
+                        errorMessage = JO.getString("message");
                     }
 
                 } catch (Exception e) {
                     FirebaseCrashlytics.getInstance().recordException(e);
                     FirebaseCrashlytics.getInstance().log("BackgroundTask(register) : username: " + username + " Exception : " + e.getMessage());
                     e.printStackTrace();
-                    Log.v("BGThread(REGISTER) : ", "Error Message : " + e.getMessage());
+                    Log.e("BGThread(REGISTER) : ", "Error Message : " + e.getMessage());
                 }
                 Log.v("BGThread(REGISTER) : ", "Error Message : " + response_api);
                 switch (response_api) {
@@ -73,15 +71,12 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
                         return "Registration Successful";
                     }
                     case "failure": {
-                        switch (errorMessage) {
-                            case "Group Name does not exist.":
-                                return "Group name does not exist.";
-                            case "Incorrect result size: expected 1, actual 0":
-                                return "Username already taken";
-                        }
+                        return errorMessage;
                     }
-                    default:
+                    default: {
+                        FirebaseCrashlytics.getInstance().log("BGThread(REGISTER) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
                         return "Some error occurred";
+                    }
                 }
             } else
                 return "Please check your Internet Connection";
@@ -95,22 +90,19 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
                     response = Utility.postData(log_url, postData.toString());
 
                     if (response != null) {
-                        Log.v("BGThread(LOGIN) : ", "DATA : " + response);
+                        Log.v("BGThread(LOGIN)", "DATA : " + response);
                         JSONObject JO = new JSONObject(response);
-                        Log.v("BGThread(LOGIN) : ", "DATA : " + JO.toString());
+                        Log.v("BGThread(LOGIN)", "DATA : " + JO.toString());
                         response_api = JO.getString("action");
-                        Log.v("BGThread(LOGIN) : ", "Response : " + response_api);
-                        errorMessage = JO.getString("errorMessage");
-                        Log.v("BGThread(LOGIN) : ", "Error Message : " + errorMessage);
+                        errorMessage = JO.getString("message");
                         name = JO.getString("name");
-                        Log.v("BGThread(LOGIN) : ", "Name : " + name);
                         username = JO.getString("userId");
-                        Log.v("BGThread(LOGIN) : ", "UserId : " + username);
                     }
                 } catch (Exception e) {
                     FirebaseCrashlytics.getInstance().recordException(e);
                     FirebaseCrashlytics.getInstance().log("BGThread(LOGIN) : username: " + username + " responseData : " + response + " Exception : " + e.getMessage());
                     e.printStackTrace();
+                    Log.e("BGThread(LOGIN) : ", "Error Message : " + e.getMessage());
                 }
                 switch (response_api) {
                     case "success": {
@@ -119,20 +111,15 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
                         return "Login Successful";
                     }
                     case "failure":
-                        switch (errorMessage) {
-                            case "Incorrect password":
-                                return "Incorrect password";
-                            case "Incorrect result size: expected 1, actual 0":
-                                return "User doesn't exist";
-                        }
-                        break;
-                    default:
+                        return errorMessage;
+                    default: {
+                        FirebaseCrashlytics.getInstance().log("BGThread(LOGIN) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
                         return "Some error occurred";
+                    }
                 }
             } else
                 return "Please check your Internet Connection";
         }
-        return "Some error occurred";
     }
 
     @Override

@@ -29,63 +29,59 @@ public class GivePredictionBackground extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         String response_api = "";
-        String time_url = Utility.url_host + "/utility/getCurrentTime";
         String prediction_url = Utility.url_host + "/player/prediction";
-        String dateTime;
-        String statusTime = "dead";
+        String time;
         String response = null;
+        String statusTime = "dead";
         try {
-            response = Utility.getData(time_url);
+            time = Utility.getTime();
+
+            if (time != null) {
+                if (Integer.parseInt(time) < 2) {
+                    return "DATA YET TO BE FLUSHED";
+                } else if (Integer.parseInt(time) >= 14) {
+                    return "dead";
+                } else {
+                    statusTime = "alive";
+                }
+                Log.d("GivePredictionBG", "time : " + time);
+            } else {
+                FirebaseCrashlytics.getInstance().log("GivePredictionBG : User : " + new UserInfo(ctx).getSavedUserID() + "  : time : " + time);
+                Log.d("GivePredictionBG", "time : is NULL");
+            }
+            Log.d("GivePredictionBG", "statusTime : " + statusTime);
+            
+            JSONObject postData = new JSONObject();
+            Log.d("GivePredictionBG PARAM ", "0 " + params[0] + " 1 " + params[1] + " 2 " + params[2]);
+            postData.accumulate("userId", params[0]);
+            if (params[1].equals("match1"))
+                postData.accumulate("match1", params[2]);
+            else
+                postData.accumulate("match2", params[2]);
+
+            response = Utility.postData(prediction_url, postData.toString());
 
             if (response != null) {
                 JSONObject JO = new JSONObject(response);
-                if ("success".equals(JO.getString("action"))) {
-                    dateTime = JO.getString("errorMessage");
-                    if (Integer.parseInt(dateTime) < 2) {
-                        return "DATA YET TO BE FLUSHED";
-                    } else if (Integer.parseInt(dateTime) >= 14) {
-                        statusTime = "dead";
-                    } else {
-                        statusTime = "alive";
-                    }
-                    Log.d("GivePredictionBG", "dateTime : " + dateTime);
-                }
-            }
-            Log.d("GivePredictionBG", "statusTime : " + statusTime);
-
-            if (statusTime.equals("dead")) {
-                return "dead";
-            } else {
-                JSONObject postData = new JSONObject();
-                Log.d("GivePredictionBG PARAM ", "0 " + params[0] + " 1 " + params[1] + " 2 " + params[2]);
-                postData.accumulate("userId", params[0]);
-                if (params[1].equals("match1"))
-                    postData.accumulate("match1", params[2]);
-                else
-                    postData.accumulate("match2", params[2]);
-
-                response = Utility.postData(prediction_url, postData.toString());
-
-                if (response != null) {
-                    JSONObject JO = new JSONObject(response);
-                    Log.v("GivePredictionBG", "DATA : " + JO.toString());
-                    response_api = JO.getString("action");
-                    Log.v("GivePredictionBG", "Response : " + response_api);
-                }
+                Log.d("GivePredictionBG", "DATA : " + JO.toString());
+                response_api = JO.getString("action");
+                Log.d("GivePredictionBG", "Response : " + response_api);
             }
         } catch (Exception e) {
             FirebaseCrashlytics.getInstance().recordException(e);
-            FirebaseCrashlytics.getInstance().log("GivePredictionBG : Response : " + response + " Exception : " + e.getMessage());
+            FirebaseCrashlytics.getInstance().log("GivePredictionBG : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response + " Exception : " + e.getMessage());
             e.printStackTrace();
-            Log.v("GivePredictionBG", "Error Message : " + e.getMessage());
+            Log.e("GivePredictionBG", "Error Message : " + e.getMessage());
         }
         switch (response_api) {
             case "success":
                 return "alive";
             case "failure":
                 return "recorded";
-            default:
+            default: {
+                FirebaseCrashlytics.getInstance().log("GivePredictionBG : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
                 return "Some error occurred";
+            }
         }
     }
 

@@ -12,14 +12,14 @@
         <string name="Multiline_Text">
        1. No participation is allowed once IPL starts i.e registration will be closed.
 \n\n2. Once your prediction is given no further changes will be allowed.
-\n\n3. Your preferred team should be placed before 2:00 PM for the matches on that day. In case, someone does not update their prediction by 2:00 PM, their points will be deducted by 30 and it will be shared by the winners.
+\n\n3. Your preferred team should be placed before 2:00 PM IST for the matches on that day. In case, someone does not update their prediction by 2:00 PM, their points will be deducted by 30 and it will be shared by the winners.
 \n\n4. Tied or weather affected games will be settled on the official match result if decided by Duckworth-Lewis (or equivalent), Super-Over or by other cricketing means. In the event of a tied match with no such decider, no points for all. In case NO STARTER due to weather or any other circumstances no points to all.
 \n\n5. Prediction of Tied matches are not allowed.
 \n\n6.League games 30 points, Playoffs 100 and final is 200.
 \n\n7.Points calculation: Loser will get -30 for each wrong prediction and the sum of losers points( 30 each) will be equally divided among the winners.
 \nEg. Out of 5 people in match:SRH vs DD, 3 predicted "SRH" and 2 predicted "DD" and the winner was "SRH". Losers will get -30 points each and winners will get (30+30)/3 = 20 each i.e. Losers points divided my no. of winners.
 \n\n8.If prediction is not given by a user then that user is considered as one of the loser.
-\n\n9.Predictions for the matches will be allowed between 2:00 AM and 2:00 PM.
+\n\n9.Predictions for the matches will be allowed between 2:00 AM IST and 2:00 PM IST.
     </string>
     <string name="group_name">Group name</string>
     <string name="show_password">Show Password\ \ </string>

@@ -10,7 +10,7 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/app_bar_post_login"
+        layout="@layout/content_post_login"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -19,9 +19,10 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@mipmap/bgimg"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_post_login"
-        app:menu="@menu/activity_postlogin_drawer" >
+        app:menu="@menu/activity_postlogin_drawer">
 
     </com.google.android.material.navigation.NavigationView>
 
