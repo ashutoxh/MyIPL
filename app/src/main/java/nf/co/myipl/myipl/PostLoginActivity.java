@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,6 +67,8 @@ public class PostLoginActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        toggle.getDrawerArrowDrawable().setColor(Color.WHITE);
+        toolbar.getOverflowIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -101,17 +105,6 @@ public class PostLoginActivity extends AppCompatActivity
         predictionbtn.setClickable(false);
         PostLoginBackground postLoginBackground = new PostLoginBackground(this);
         postLoginBackground.execute();
-        thread = new Thread(() -> {
-            try {
-                while (!thread.isInterrupted()) {
-                    Thread.sleep(30000);
-                    runOnUiThread(PostLoginActivity::refreshTime);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        thread.start();
     }
 
     public void givePrediction2a(View view) {
@@ -352,20 +345,34 @@ public class PostLoginActivity extends AppCompatActivity
         return true;
     }
 
-    public static void refreshTime() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (LocalTime.now(ZoneId.of("Asia/Kolkata")).isAfter(LocalTime.of(13, 0)) &&
-                    LocalTime.now(ZoneId.of("Asia/Kolkata")).isBefore(LocalTime.of(14, 0))) {
-                timeLeft.setText(MINUTES.between(LocalTime.now(ZoneId.of("Asia/Kolkata")), LocalTime.of(14, 0)) + " minutes left untill you can give your prediction(s).");
-                timeLeft.setVisibility(View.VISIBLE);
-            } else if (LocalTime.now(ZoneId.of("Asia/Kolkata")).isAfter(LocalTime.of(14, 0))) {
-                timeLeft.setText("Prediction is now disabled");
-                timeLeft.setVisibility(View.VISIBLE);
-            } else {
-                timeLeft.setVisibility(View.GONE);
+    public void refreshTime() {
+        thread = new Thread(() -> {
+            try {
+                Thread.sleep(60000);
+                while (!thread.isInterrupted()) {
+                    runOnUiThread(() ->
+                    {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            if (LocalTime.now(ZoneId.of("Asia/Kolkata")).isAfter(LocalTime.of(13, 0)) &&
+                                    LocalTime.now(ZoneId.of("Asia/Kolkata")).isBefore(LocalTime.of(14, 0))) {
+                                timeLeft.setText(MINUTES.between(LocalTime.now(ZoneId.of("Asia/Kolkata")), LocalTime.of(14, 1)) + " minutes left untill you can give your prediction(s).");
+                                timeLeft.setVisibility(View.VISIBLE);
+                            } else if (LocalTime.now(ZoneId.of("Asia/Kolkata")).isAfter(LocalTime.of(14, 0))) {
+                                timeLeft.setText("Prediction is now disabled");
+                                timeLeft.setVisibility(View.VISIBLE);
+                            } else {
+                                timeLeft.setVisibility(View.GONE);
+                            }
+                        } else {
+                            timeLeft.setVisibility(View.GONE);
+                        }
+                    });
+                    Thread.sleep(30000);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } else {
-            timeLeft.setVisibility(View.GONE);
-        }
+        });
+        thread.start();
     }
 }

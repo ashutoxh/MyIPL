@@ -1,5 +1,6 @@
 package nf.co.myipl.myipl;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ public class AboutUs extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
         setSupportActionBar(toolbar);
+        toolbar.getNavigationIcon().setColorFilter(getResources().getColor(R.color.color_silver), PorterDuff.Mode.SRC_ATOP);
     }
 
     @Override

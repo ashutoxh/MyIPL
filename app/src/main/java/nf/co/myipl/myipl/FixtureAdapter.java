@@ -27,6 +27,7 @@ public class FixtureAdapter extends ArrayAdapter<String> {
         this.match2 = match2;
         this.winner = winner;
     }
+
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
@@ -40,11 +41,12 @@ public class FixtureAdapter extends ArrayAdapter<String> {
         TextView match1Text = rootView.findViewById(R.id.match1Text);
         TextView match2Text = rootView.findViewById(R.id.match2Text);
         TextView winnerText = rootView.findViewById(R.id.winnerText);
-        dateText.setText(date.get(position));
-        match1Text.setText(match1.get(position));
-        match2Text.setText(match2.get(position));
-        winnerText.setText(winner.get(position));
-
+        if (date.size() != 0 && match1.size() != 0 && match2.size() != 0 && winner.size() != 0) {
+            dateText.setText(date.get(position));
+            match1Text.setText(match1.get(position));
+            match2Text.setText(match2.get(position));
+            winnerText.setText(winner.get(position));
+        }
         return rootView;
     }
 
