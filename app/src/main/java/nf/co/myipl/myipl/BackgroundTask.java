@@ -89,7 +89,6 @@ public class BackgroundTask extends AsyncTask<String, Void, String> {
                 try {
                     postData.accumulate("userId", username);
                     postData.accumulate("password", password);
-                    Log.d("BGThread(LOGIN)", "User : " + username + " Pass : " + password);
 
                     response = Utility.postData(log_url, postData.toString());
 

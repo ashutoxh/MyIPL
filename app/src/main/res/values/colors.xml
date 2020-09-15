@@ -13,4 +13,14 @@
     <color name="color_silver">#FFFFFF</color>
     <color name="color_bronze">#A75B10</color>
     <color name="color_default">#FFD8B1</color>
+
+    <color name="RCB">#ffb3b3</color>
+    <color name="MI">#b3d1ff</color>
+    <color name="CSK">#ffebcc</color>
+    <color name="KXIP">#ffd6cc</color>
+    <color name="DC">#ccf5ff</color>
+    <color name="RR">#ffe6ff</color>
+    <color name="KKR">#d9b3ff</color>
+    <color name="SRH">#ffc299</color>
+    <color name="defaultColor">#ffffff</color>
 </resources>

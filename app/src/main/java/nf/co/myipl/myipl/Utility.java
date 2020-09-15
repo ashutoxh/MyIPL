@@ -17,8 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 class Utility {
-    public static String url_host = "http://192.168.0.109:8080/myipl";      //ASHU
-//    public static String url_host = "http://192.168.0.102:8080/myipl";            //AWES
+    public static String url_host = "https://memetisement.in/myipl";           //AWES
 
     public static boolean connection(Context ctx) {
         ConnectivityManager connectivityManager = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);

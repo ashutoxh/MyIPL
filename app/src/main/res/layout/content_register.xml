@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:background="@android:color/background_light"
-        android:text="Register\ "
+        android:text="@string/title_activity_register"
         android:textColor="@color/black_color"
         android:textSize="24sp"
         android:textStyle="bold"

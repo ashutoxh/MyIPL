@@ -30,48 +30,38 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
 
     @Override
     protected Object[] doInBackground(String... strings) {
-        String schedule_url = Utility.url_host + "/player/scheduler";
-        String date;
+        String schedule_url = Utility.url_host + "/player/schedulerForToday";
         ArrayList<String> match1 = new ArrayList<>();
         ArrayList<String> match2 = new ArrayList<>();
         String response = null;
 
-        date = Utility.getDate();
+        try {
+            response = Utility.getData(schedule_url);
 
-        if (date != null) {
-            try {
-                response = Utility.getData(schedule_url);
-                if (response != null) {
-                    Log.d("PostLoginBackground", "response : " + response);
-                    JSONObject userData = new JSONObject(response);
-                    if ("success".equals(userData.getString("action"))) {
-                        JSONArray jsonArray = userData.getJSONArray("scheduler");
-                        int count = 0;
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject arrayData = jsonArray.getJSONObject(i);
-                            if (date.equals(arrayData.getString("date"))) {
-                                match1.add(arrayData.getString("match1"));
-                                match2.add(arrayData.getString("match2"));
-                                count++;
-                            }
-                            if (count > 2)
-                                break;
-                        }
-                        Log.d("PostLoginBackground", "User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
-                        FirebaseCrashlytics.getInstance().log("PostLoginBackground(schedule_url) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
+            if (response != null) {
+                Log.d("PostLoginBackground", "response : " + response);
+                JSONObject userData = new JSONObject(response);
+                if ("success".equals(userData.getString("action"))) {
+                    JSONArray jsonArray = userData.getJSONArray("scheduler");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject arrayData = jsonArray.getJSONObject(i);
+                        match1.add(arrayData.getString("match1"));
+                        match2.add(arrayData.getString("match2"));
                     }
+                    Log.d("PostLoginBackground", "User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
+                    FirebaseCrashlytics.getInstance().log("PostLoginBackground(schedule_url) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response);
                 } else {
                     Log.d("PostLoginBackground", "User : " + new UserInfo(ctx).getSavedUserID() + "  : Response is NULL");
                     FirebaseCrashlytics.getInstance().log("PostLoginBackground(schedule_url) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response is NULL");
                 }
-            } catch (Exception e) {
-                FirebaseCrashlytics.getInstance().recordException(e);
-                FirebaseCrashlytics.getInstance().log("PostLoginBackground(schedule_url) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response + " Exception : " + e.getMessage());
-                e.printStackTrace();
-                Log.e("PostLoginBackground", "schedule_url : Error Message : " + e.getMessage());
             }
+        } catch (Exception e) {
+            FirebaseCrashlytics.getInstance().recordException(e);
+            FirebaseCrashlytics.getInstance().log("PostLoginBackground(schedule_url) : User : " + new UserInfo(ctx).getSavedUserID() + "  : Response : " + response + " Exception : " + e.getMessage());
+            e.printStackTrace();
+            Log.e("PostLoginBackground", "schedule_url : Error Message : " + e.getMessage());
         }
-        return new Object[]{date, match1, match2};
+        return new Object[]{match1, match2};
     }
 
     @Override
@@ -79,8 +69,8 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
         if (Utility.connection(ctx)) {
             ArrayList<String> match1;
             ArrayList<String> match2;
-            match1 = (ArrayList<String>) temp[1];
-            match2 = (ArrayList<String>) temp[2];
+            match1 = (ArrayList<String>) temp[0];
+            match2 = (ArrayList<String>) temp[1];
             Log.d("PostLoginBackground", " " + match1.toString() + " " + match2.toString());
             ArrayList<String> team = new ArrayList<>();
             if (match1.size() != 0) {
@@ -91,7 +81,6 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
                 }
                 Log.d("PostLoginBackground", "match1.size() " + match1.size());
                 if (match1.size() > 1) {
-
                     PostLoginActivity.team1a.setVisibility(View.VISIBLE);
                     PostLoginActivity.team1b.setVisibility(View.VISIBLE);
                     PostLoginActivity.VS1.setVisibility(View.VISIBLE);
@@ -121,9 +110,11 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
                     setMatchIcon(team);
                     new UserInfo(ctx).setMATCH_COUNT(1);
                 }
+                PostLoginActivity.isMatchToday = true;
+                PostLoginActivity.shouldThreadRun = true;
                 new PostLoginActivity().refreshTime();
             } else {
-                PostLoginActivity.textPrediction.setText("No match today. Check fixtures for more info.");
+                PostLoginActivity.textPrediction.setText("No match today.\nCheck fixtures for more info");
                 PostLoginActivity.team1a.setVisibility(View.GONE);
                 PostLoginActivity.team1b.setVisibility(View.GONE);
                 PostLoginActivity.VS1.setVisibility(View.GONE);
@@ -132,12 +123,14 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
                 PostLoginActivity.VS2.setVisibility(View.GONE);
                 PostLoginActivity.progressBar.setVisibility(View.GONE);
                 PostLoginActivity.timeLeft.setVisibility(View.GONE);
+                PostLoginActivity.isMatchToday = false;
+                PostLoginActivity.shouldThreadRun = false;
             }
-            PostLoginActivity.leaderboardbtn.setClickable(true);
             PostLoginActivity.predictionbtn.setClickable(true);
+            PostLoginActivity.leaderboardbtn.setClickable(true);
             PostLoginActivity.progressBar.setVisibility(View.GONE);
         } else {
-            PostLoginActivity.textPrediction.setText("Please check your Internet Connection and restart the app");
+            PostLoginActivity.textPrediction.setText("Please check your Internet Connection.\nPull down to refresh");
             PostLoginActivity.team1a.setVisibility(View.GONE);
             PostLoginActivity.team1b.setVisibility(View.GONE);
             PostLoginActivity.VS1.setVisibility(View.GONE);
@@ -146,6 +139,9 @@ public class PostLoginBackground extends AsyncTask<String, Void, Object[]> {
             PostLoginActivity.VS2.setVisibility(View.GONE);
             PostLoginActivity.progressBar.setVisibility(View.GONE);
             PostLoginActivity.timeLeft.setVisibility(View.GONE);
+            PostLoginActivity.predictionbtn.setClickable(false);
+            PostLoginActivity.leaderboardbtn.setClickable(false);
+            PostLoginActivity.shouldThreadRun = false;
         }
     }
 

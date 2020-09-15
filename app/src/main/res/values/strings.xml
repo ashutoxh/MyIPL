@@ -17,7 +17,7 @@
 \n\n5. Prediction of Tied matches are not allowed.
 \n\n6.League games 30 points, Playoffs 100 and final is 200.
 \n\n7.Points calculation: Loser will get -30 for each wrong prediction and the sum of losers points( 30 each) will be equally divided among the winners.
-\nEg. Out of 5 people in match:SRH vs DD, 3 predicted "SRH" and 2 predicted "DD" and the winner was "SRH". Losers will get -30 points each and winners will get (30+30)/3 = 20 each i.e. Losers points divided my no. of winners.
+\nEg. Out of 5 people in match: SRH vs DC, 3 predicted "SRH" and 2 predicted "DC" and the winner was "SRH". Losers will get -30 points each and winners will get (30+30)/3 = 20 each i.e. Losers points divided my no. of winners.
 \n\n8.If prediction is not given by a user then that user is considered as one of the loser.
 \n\n9.Predictions for the matches will be allowed between 2:00 AM IST and 2:00 PM IST.
     </string>

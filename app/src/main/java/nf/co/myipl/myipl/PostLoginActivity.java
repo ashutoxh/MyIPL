@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -41,6 +42,8 @@ public class PostLoginActivity extends AppCompatActivity
     @SuppressLint("StaticFieldLeak")
     static TextView VS1, VS2, textPrediction, timeLeft;
     static Toast exitToast, networkToast;
+    static boolean isMatchToday = false;
+    static boolean shouldThreadRun = true;
     @SuppressLint("StaticFieldLeak")
     static ProgressBar progressBar;
     String userName = "", userID = "";
@@ -57,8 +60,8 @@ public class PostLoginActivity extends AppCompatActivity
         userName = userInfo.getSavedUserName();
         userID = userInfo.getSavedUserID();
         userInfo.setSAVED_STATE("Alive");
-        Log.d("POSTLOGIN ", userName + " " + userID);
-        Log.d("POSTLOGIN STATUS ", "status: " + userInfo.getSavedState());
+        Log.d("POSTLOGIN", userName + " " + userID);
+        Log.d("POSTLOGIN", "status: " + userInfo.getSavedState());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -80,6 +83,7 @@ public class PostLoginActivity extends AppCompatActivity
         loggedInUserName.setText(userName);
         getPoints.setText(userID);
 
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swiperefresh);
         team1a = findViewById(R.id.team1a);
         team1b = findViewById(R.id.team1b);
         team2a = findViewById(R.id.team2a);
@@ -105,10 +109,13 @@ public class PostLoginActivity extends AppCompatActivity
         predictionbtn.setClickable(false);
         PostLoginBackground postLoginBackground = new PostLoginBackground(this);
         postLoginBackground.execute();
+
+        swipeRefreshLayout.setOnRefreshListener(this::recreate);
     }
 
     public void givePrediction2a(View view) {
         ctx = this;
+        Log.d("POSTLOGIN", "givePrediction2a " + team2a.getText().toString());
         runOnUiThread(() -> {
             if (Utility.connection(ctx)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
@@ -137,6 +144,7 @@ public class PostLoginActivity extends AppCompatActivity
 
     public void givePrediction2b(View view) {
         ctx = this;
+        Log.d("POSTLOGIN", "givePrediction2b " + team2b.getText().toString());
         runOnUiThread(() -> {
             if (Utility.connection(ctx)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
@@ -165,6 +173,7 @@ public class PostLoginActivity extends AppCompatActivity
 
     public void givePrediction1a(View view) {
         ctx = this;
+        Log.d("POSTLOGIN", "givePrediction1a " + team1a.getText().toString());
         runOnUiThread(() -> {
             if (Utility.connection(ctx)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
@@ -193,6 +202,7 @@ public class PostLoginActivity extends AppCompatActivity
 
     public void givePrediction1b(View view) {
         ctx = this;
+        Log.d("POSTLOGIN", "givePrediction1b " + team1b.getText().toString());
         runOnUiThread(() -> {
             if (Utility.connection(ctx)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
@@ -300,8 +310,12 @@ public class PostLoginActivity extends AppCompatActivity
     }
 
     public void goToPrediction(View view) {
-        Intent intent = new Intent(this, Predictions.class);
-        startActivity(intent);
+        if (isMatchToday) {
+            Intent intent = new Intent(this, Predictions.class);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "No match today", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -309,7 +323,7 @@ public class PostLoginActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.nav_share) {
-            String shareBody = "https://goo.gl/w9dd1r";
+            String shareBody = "https://nome.ga/myipl";
 
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
@@ -348,8 +362,7 @@ public class PostLoginActivity extends AppCompatActivity
     public void refreshTime() {
         thread = new Thread(() -> {
             try {
-                Thread.sleep(60000);
-                while (!thread.isInterrupted()) {
+                while (shouldThreadRun) {
                     runOnUiThread(() ->
                     {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -375,4 +388,5 @@ public class PostLoginActivity extends AppCompatActivity
         });
         thread.start();
     }
+
 }

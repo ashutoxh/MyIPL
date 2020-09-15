@@ -65,9 +65,9 @@ public class GetPredNLeaderBackground extends AsyncTask<String, Void, Object[]> 
             }
         } else if ("LEADERBOARD".equals(method)) {
             Log.d("GetPredNLeaderBG(LEAD)", method);
+            ArrayList<String> rank = new ArrayList<>();
             ArrayList<String> username = new ArrayList<>();
             ArrayList<String> points = new ArrayList<>();
-            double point;
             try {
                 response = Utility.getData(leaderboard_url);
                 if (response != null) {
@@ -78,12 +78,11 @@ public class GetPredNLeaderBackground extends AsyncTask<String, Void, Object[]> 
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject arrayData = jsonArray.getJSONObject(i);
+                            rank.add(arrayData.getString("rank"));
                             username.add(arrayData.getString("userId"));
-                            point = Double.parseDouble(arrayData.getString("points"));
-                            point = (double) Math.round(point * 100) / 100;
-                            points.add("" + point);
+                            points.add(arrayData.getString("points"));
                         }
-                        return new Object[]{username, points};
+                        return new Object[]{rank, username, points};
                     }
                 }
             } catch (Exception e) {
@@ -127,13 +126,15 @@ public class GetPredNLeaderBackground extends AsyncTask<String, Void, Object[]> 
             Predictions.progressBar.setVisibility(View.INVISIBLE);
         } else if ("LEADERBOARD".equals(method)) {
             Log.d("GPLB postEXE ", method);
+            ArrayList<String> rank = new ArrayList<>();
             ArrayList<String> username = new ArrayList<>();
             ArrayList<String> points = new ArrayList<>();
             if (temp != null) {
-                username = (ArrayList<String>) temp[0];
-                points = (ArrayList<String>) temp[1];
+                rank = (ArrayList<String>) temp[0];
+                username = (ArrayList<String>) temp[1];
+                points = (ArrayList<String>) temp[2];
             }
-            LeaderboardAdapter adapter = new LeaderboardAdapter(ctx, username, points);
+            LeaderboardAdapter adapter = new LeaderboardAdapter(ctx, rank, username, points);
             Leaderboard.leaderboard.setAdapter(adapter);
             Leaderboard.progressBar.setVisibility(View.INVISIBLE);
         }

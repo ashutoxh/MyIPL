@@ -3,7 +3,6 @@ package nf.co.myipl.myipl;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,14 @@ import java.util.ArrayList;
 public class LeaderboardAdapter extends ArrayAdapter<String> {
 
     private final Context ctx;
+    private final ArrayList<String> rank;
     private final ArrayList<String> uname;
     private final ArrayList<String> upoints;
 
-    LeaderboardAdapter(Context ctx, ArrayList<String> uname, ArrayList<String> upoints) {
+    LeaderboardAdapter(Context ctx, ArrayList<String> rank, ArrayList<String> uname, ArrayList<String> upoints) {
         super(ctx, R.layout.adapter_prediction, uname);
         this.ctx = ctx;
+        this.rank = rank;
         this.uname = uname;
         this.upoints = upoints;
     }
@@ -39,28 +40,13 @@ public class LeaderboardAdapter extends ArrayAdapter<String> {
         TextView rankT = rootView.findViewById(R.id.rank);
         TextView username = rootView.findViewById(R.id.username);
         TextView points = rootView.findViewById(R.id.points);
-//        double point;
-//        int count = 0;
 
+        rankT.setText(rank.get(position));
         username.setText(uname.get(position));
         points.setText(upoints.get(position));
-        ArrayList<Integer> rank = new ArrayList<>();
-        int p_rank = 1, j;
-        rank.add(p_rank);
-        for (int i = 0; i < upoints.size() - 1; i++) {
-            j = i + 1;
-            if (Double.parseDouble(upoints.get(i)) == Double.parseDouble(upoints.get(j))) {
-                rank.add(p_rank);
-                Log.d("Rank  is ", "" + p_rank);
-            } else {
-                p_rank += 1;
-                rank.add(p_rank);
-                Log.d("Rank else is ", "" + p_rank);
-            }
-        }
-        rankT.setText("" + rank.get(position));
+
         switch (rank.get(position)) {
-            case 1:
+            case "1":
                 rankT.setTypeface(null, Typeface.BOLD);
                 username.setTypeface(null, Typeface.BOLD);
                 points.setTypeface(null, Typeface.BOLD);
@@ -69,11 +55,11 @@ public class LeaderboardAdapter extends ArrayAdapter<String> {
                 username.setTextSize(15);
                 points.setTextSize(15);
 
-                rankT.setTextColor(Color.parseColor("#DAA520"));
-                username.setTextColor(Color.parseColor("#DAA520"));
-                points.setTextColor(Color.parseColor("#DAA520"));
+                rankT.setTextColor(Color.parseColor("#ffbf00"));
+                username.setTextColor(Color.parseColor("#ffbf00"));
+                points.setTextColor(Color.parseColor("#ffbf00"));
                 break;
-            case 2:
+            case "2":
                 rankT.setTypeface(null, Typeface.BOLD);
                 username.setTypeface(null, Typeface.BOLD);
                 points.setTypeface(null, Typeface.BOLD);
@@ -86,7 +72,7 @@ public class LeaderboardAdapter extends ArrayAdapter<String> {
                 username.setTextColor(Color.parseColor("#A9A9A9"));
                 points.setTextColor(Color.parseColor("#A9A9A9"));
                 break;
-            case 3:
+            case "3":
                 rankT.setTypeface(null, Typeface.BOLD);
                 username.setTypeface(null, Typeface.BOLD);
                 points.setTypeface(null, Typeface.BOLD);
@@ -95,9 +81,9 @@ public class LeaderboardAdapter extends ArrayAdapter<String> {
                 username.setTextSize(15);
                 points.setTextSize(15);
 
-                rankT.setTextColor(Color.parseColor("#8C7853"));
-                username.setTextColor(Color.parseColor("#8C7853"));
-                points.setTextColor(Color.parseColor("#8C7853"));
+                rankT.setTextColor(Color.parseColor("#ac7339"));
+                username.setTextColor(Color.parseColor("#ac7339"));
+                points.setTextColor(Color.parseColor("#ac7339"));
                 break;
             default:
                 rankT.setTypeface(null, Typeface.NORMAL);
@@ -109,7 +95,6 @@ public class LeaderboardAdapter extends ArrayAdapter<String> {
                 points.setTextColor(Color.parseColor("#000000"));
                 break;
         }
-
         return rootView;
     }
 

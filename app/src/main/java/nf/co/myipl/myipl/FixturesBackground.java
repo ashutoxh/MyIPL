@@ -19,8 +19,6 @@ import java.util.Date;
 public class FixturesBackground extends AsyncTask<Void, Void, Object[]> {
     @SuppressLint("StaticFieldLeak")
     Context ctx;
-    //char [] time;
-
 
     FixturesBackground(Context ctx) {
         this.ctx = ctx;
@@ -57,17 +55,15 @@ public class FixturesBackground extends AsyncTask<Void, Void, Object[]> {
                 SimpleDateFormat targetDateFormat = new SimpleDateFormat("EEE,MMM d");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject arrayData = jsonArray.getJSONObject(i);
-                    String dateOfMatch = arrayData.getString("date");
+                    String dateOfMatch = arrayData.getString("date").trim();
                     if (!"null".equals(dateOfMatch)) {
                         Date matchDate = originalDateFormat.parse(dateOfMatch);
                         dateArr.add(targetDateFormat.format(matchDate));
                     } else {
                         dateArr.add("TBD");
                     }
-                    Log.d("FixturesBackground", "matchDate : " + dateOfMatch);
-                    Log.d("FixturesBackground", "dateArr : " + dateArr.get(0));
-                    match1.add(arrayData.getString("match1"));
-                    match2.add(arrayData.getString("match2"));
+                    match1.add(arrayData.getString("match1").trim());
+                    match2.add(arrayData.getString("match2").trim());
                     if (!arrayData.has("winner") || arrayData.getString("winner").equalsIgnoreCase("null"))
                         winner.add("--");
                     else

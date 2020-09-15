@@ -3,6 +3,7 @@ package nf.co.myipl.myipl;
 import android.annotation.SuppressLint;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -44,16 +45,19 @@ public class Predictions extends AppCompatActivity {
         ngiven1 = findViewById(R.id.notgiven1);
         ngiven2 = findViewById(R.id.notgiven2);
         UserInfo userInfo = new UserInfo(this);
-        if (userInfo.getMATCH_COUNT().equals("2")) {
-            m2Text.setVisibility(View.VISIBLE);
-            match1a.setVisibility(View.VISIBLE);
-            match1b.setVisibility(View.VISIBLE);
-            ngiven1.setVisibility(View.VISIBLE);
-        } else {
-            m2Text.setVisibility(View.GONE);
-            match1a.setVisibility(View.GONE);
-            match1b.setVisibility(View.GONE);
-            ngiven1.setVisibility(View.GONE);
+        Log.d("Predictions", "" + userInfo.getMATCH_COUNT());
+        if(null != userInfo.getMATCH_COUNT()) {
+            if (userInfo.getMATCH_COUNT().equals("2")) {
+                m2Text.setVisibility(View.VISIBLE);
+                match1a.setVisibility(View.VISIBLE);
+                match1b.setVisibility(View.VISIBLE);
+                ngiven1.setVisibility(View.VISIBLE);
+            } else {
+                m2Text.setVisibility(View.GONE);
+                match1a.setVisibility(View.GONE);
+                match1b.setVisibility(View.GONE);
+                ngiven1.setVisibility(View.GONE);
+            }
         }
         GetPredNLeaderBackground getPredictionBackground = new GetPredNLeaderBackground(this);
         getPredictionBackground.execute("PREDICTION");

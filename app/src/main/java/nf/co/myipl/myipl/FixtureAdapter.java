@@ -1,6 +1,9 @@
 package nf.co.myipl.myipl;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import java.util.ArrayList;
 
@@ -43,11 +49,57 @@ public class FixtureAdapter extends ArrayAdapter<String> {
         TextView winnerText = rootView.findViewById(R.id.winnerText);
         if (date.size() != 0 && match1.size() != 0 && match2.size() != 0 && winner.size() != 0) {
             dateText.setText(date.get(position));
+            setBackgroundColour(date.get(position), dateText);
             match1Text.setText(match1.get(position));
+            setBackgroundColour(match1.get(position), match1Text);
             match2Text.setText(match2.get(position));
+            setBackgroundColour(match2.get(position), match2Text);
             winnerText.setText(winner.get(position));
+            setBackgroundColour(winner.get(position), winnerText);
         }
         return rootView;
+    }
+
+    private void setBackgroundColour(String teamName, TextView teamText){
+        Drawable unwrappedDrawable = AppCompatResources.getDrawable(ctx, R.drawable.edittextfix);
+        Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
+        switch (teamName) {
+            case "RCB": {
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.RCB));
+                break;
+            }
+            case "MI": {
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.MI));
+                break;
+            }
+            case "KKR": {
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.KKR));
+                break;
+            }
+            case "CSK": {
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.CSK));
+                break;
+            }
+            case "RR": {
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.RR));
+                break;
+            }
+            case "SRH": {
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.SRH));
+                break;
+            }
+            case "DC": {
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.DC));
+                break;
+            }
+            case "KXIP": {
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.KXIP));
+                break;
+            }
+            default:
+                DrawableCompat.setTint(wrappedDrawable, ctx.getResources().getColor(R.color.defaultColor));
+        }
+        teamText.setBackground(unwrappedDrawable);
     }
 
 }
